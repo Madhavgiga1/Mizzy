@@ -55,7 +55,6 @@ public class QuizTakingService {
                 .findByQuizAndUserAndStatus(quiz, user, AttemptStatus.IN_PROGRESS);
 
         if (existingAttempt.isPresent()) {
-            // Return existing attempt if not expired
             QuizAttempt attempt = existingAttempt.get();
             if (!attempt.isExpired()) {
                 return mapToAttemptDto(attempt);
