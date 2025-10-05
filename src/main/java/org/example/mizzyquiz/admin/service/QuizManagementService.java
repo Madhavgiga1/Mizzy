@@ -66,20 +66,13 @@ public class QuizManagementService {
     }
 
     @Transactional
-    public void addQuestionsToQuiz(UUID quizId, List<UUID> questionIds) {
-        Quiz quiz = quizRepository.findByIdWithQuestions(quizId)
-                .orElseThrow(() -> new ResourceNotFoundException("Quiz not found"));
+    public void addQuestionsToQuiz(String quizId, List<Question> questions) {
 
-        if (quiz.isPublished()) {
-            throw new BadRequestException("Cannot modify published quiz");
-        }
+        Quiz quiz=quizRepository.findById(UUID.fromString(quizId)).get();
 
-        List<Question> questions = questionRepository.findAllById(questionIds);
 
         for (Question question : questions) {
-            if (!question.isValidConfiguration()) {
-                throw new BadRequestException("Question " + question.getId() + " has invalid configuration");
-            }
+
             quiz.addQuestion(question);
         }
 

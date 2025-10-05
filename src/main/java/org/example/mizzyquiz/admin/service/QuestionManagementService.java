@@ -10,6 +10,7 @@ import org.example.mizzyquiz.quiz.enitity.Option;
 import org.example.mizzyquiz.quiz.enitity.Question;
 import org.apache.coyote.BadRequestException;
 import org.example.mizzyquiz.quiz.enitity.QuestionType;
+import org.example.mizzyquiz.quiz.enitity.Quiz;
 import org.example.mizzyquiz.quiz.repository.QuestionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,18 +36,11 @@ public class QuestionManagementService {
 
         Question question = Question.builder()
                 .text(dto.getText())
-                .type(dto.getType())
                 .points(dto.getPoints() != null ? dto.getPoints() : 1)
                 .explanation(dto.getExplanation())
-                .category(dto.getCategory())
-                .difficulty(dto.getDifficulty())
-                .required(dto.isRequired())
                 .build();
 
-        // Add tags
-        if (dto.getTags() != null) {
-            question.getTags().addAll(dto.getTags());
-        }
+
 
         // Add options
         for (OptionDto optionDto : dto.getOptions()) {
@@ -60,7 +54,7 @@ public class QuestionManagementService {
 
         // Validate question configuration
         if (!question.isValidConfiguration()) {
-            throw new BadRequestException("Invalid question configuration for type: " + dto.getType());
+            throw new BadRequestException("Invalid question configuration for type: " );
         }
 
         question = questionRepository.save(question);
@@ -76,18 +70,16 @@ public class QuestionManagementService {
 
         // Check if question is part of published quiz
         boolean isInPublishedQuiz = question.getQuizzes().stream()
-                .anyMatch(quiz -> quiz.isPublished());
+                .anyMatch(Quiz::isPublished);
 
         if (isInPublishedQuiz) {
             throw new BadRequestException("Cannot modify question used in published quiz");
         }
 
         question.setText(dto.getText());
-        question.setType(dto.getType());
         question.setPoints(dto.getPoints());
         question.setExplanation(dto.getExplanation());
-        question.setCategory(dto.getCategory());
-        question.setDifficulty(dto.getDifficulty());
+
 
         // Update options
         question.getOptions().clear();
@@ -130,7 +122,5 @@ public class QuestionManagementService {
         return questionRepository.findAll(pageable);
     }
 
-    public List<String> getAllCategories() {
-        return questionRepository.findAllCategories();
-    }
+
 }

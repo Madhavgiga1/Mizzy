@@ -153,27 +153,7 @@ public class QuizTakingService {
         }
 
         // Set selected options based on question type
-        switch (question.getType()) {
-            case SINGLE_CHOICE, TRUE_FALSE -> {
-                if (dto.getSelectedOptionId() == null) {
-                    throw new BadRequestException("Option must be selected");
-                }
-                Option option = question.getOptions().stream()
-                        .filter(o -> o.getId().equals(dto.getSelectedOptionId()))
-                        .findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException("Invalid option"));
-                answer.setSelectedOption(option);
-            }
-            case MULTIPLE_CHOICE -> {
-                if (dto.getSelectedOptionIds() == null || dto.getSelectedOptionIds().isEmpty()) {
-                    throw new BadRequestException("At least one option must be selected");
-                }
-                Set<Option> options = question.getOptions().stream()
-                        .filter(o -> dto.getSelectedOptionIds().contains(o.getId()))
-                        .collect(Collectors.toSet());
-                answer.setSelectedOptions(options);
-            }
-        }
+
 
         // Don't evaluate correctness yet (only on final submission)
         attempt.addAnswer(answer);
@@ -258,9 +238,7 @@ public class QuizTakingService {
         return QuestionDto.builder()
                 .id(question.getId())
                 .text(question.getText())
-                .type(question.getType())
                 .points(question.getPoints())
-                .required(question.isRequired())
                 .options(options)
                 .build();
     }

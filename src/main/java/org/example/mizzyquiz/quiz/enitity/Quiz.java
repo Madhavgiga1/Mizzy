@@ -1,6 +1,7 @@
 package org.example.mizzyquiz.quiz.enitity;
 
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.mizzyquiz.auth.entity.User;
@@ -12,7 +13,6 @@ import java.util.*;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Quiz extends BaseEntity {
 
@@ -44,7 +44,6 @@ public class Quiz extends BaseEntity {
     @Builder.Default
     private Integer maxAttempts = 1;
 
-    // Many-to-Many with Question (Question Bank approach)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "quiz_questions",
@@ -57,25 +56,45 @@ public class Quiz extends BaseEntity {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private Set<QuizAttempt> attempts = new HashSet<>();
 
-    // Helper methods
+    // explicit no-arg constructor to ensure collections are initialized
+    public Quiz() {
+        this.questions = new ArrayList<>();
+        this.attempts = new HashSet<>();
+        this.published = false;
+        this.maxAttempts = 1;
+    }
+
+    // lifecycle callbacks that JPA will call
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void ensureCollections() {
+        if (questions == null) questions = new ArrayList<>();
+        if (attempts == null) attempts = new HashSet<>();
+    }
+
+    // Helper methods (defensive)
     public void addQuestion(Question question) {
+        if (questions == null) questions = new ArrayList<>();
+        if (question.getQuizzes() == null) question.setQuizzes(new HashSet<>());
         questions.add(question);
         question.getQuizzes().add(this);
     }
 
     public void removeQuestion(Question question) {
-        questions.remove(question);
-        question.getQuizzes().remove(this);
+        if (questions != null) {
+            questions.remove(question);
+        }
+        if (question.getQuizzes() != null) {
+            question.getQuizzes().remove(this);
+        }
     }
 
     public int getTotalPoints() {
-        return questions.stream()
-                .mapToInt(Question::getPoints)
-                .sum();
+        return (questions == null) ? 0 : questions.stream().mapToInt(Question::getPoints).sum();
     }
 
     public int getQuestionCount() {
-        return questions.size();
+        return (questions == null) ? 0 : questions.size();
     }
 }
-

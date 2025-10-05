@@ -20,19 +20,11 @@ public class QuestionCreateDto {
     @Size(max = 1000)
     private String text;
 
-    @NotNull(message = "Question type is required")
-    private QuestionType type;
-
     @Min(1)
     private Integer points;
 
     @Size(max = 2000)
     private String explanation;
-
-    private String category;
-    private DifficultyLevel difficulty;
-    private Set<String> tags;
-    private boolean required = true;
 
     @NotEmpty(message = "Options are required")
     @Size(min = 2, message = "At least 2 options are required")

@@ -33,7 +33,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public UserDto registerUser(@Valid RegisterRequest request) throws BadRequestException {
+    public UserDto registerUser(RegisterRequest request) throws BadRequestException {
         // Validate
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException("Username is already taken!");
@@ -76,7 +76,7 @@ public class AuthService {
         return mapToDto(user);
     }
 
-    public JwtAuthResponse login(@Valid LoginRequest request) {
+    public JwtAuthResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsernameOrEmail(),

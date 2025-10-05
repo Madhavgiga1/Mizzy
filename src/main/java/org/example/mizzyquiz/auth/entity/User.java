@@ -12,6 +12,7 @@ import org.example.mizzyquiz.quiz.enitity.QuizAttempt;
 
 import java.util.*;
 
+
 @Entity
 @Table(name = "users")
 @Getter

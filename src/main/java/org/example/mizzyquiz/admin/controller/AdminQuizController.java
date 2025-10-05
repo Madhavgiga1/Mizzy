@@ -53,9 +53,9 @@ public class AdminQuizController {
 
     @PostMapping("/quizzes/{id}/questions")
     public ResponseEntity<Void> addQuestionsToQuiz(
-            @PathVariable UUID id,
-            @RequestBody List<UUID> questionIds) {
-        quizManagementService.addQuestionsToQuiz(id, questionIds);
+            @PathVariable String id,
+            @RequestBody List<Question> questions) {
+        quizManagementService.addQuestionsToQuiz((id), questions);
         return ResponseEntity.ok().build();
     }
 

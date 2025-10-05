@@ -50,15 +50,8 @@ public class Answer extends BaseEntity {
 
     // Helper method to check correctness
     public void evaluateAnswer() {
-        switch (question.getType()) {
-            case SINGLE_CHOICE, TRUE_FALSE -> {
-                this.correct = selectedOption != null && selectedOption.isCorrect();
-            }
-            case MULTIPLE_CHOICE -> {
-                Set<Option> correctOptions = new HashSet<>(question.getCorrectOptions());
-                this.correct = selectedOptions.equals(correctOptions);
-            }
-        }
+        this.correct = selectedOption != null && selectedOption.isCorrect();
+
         this.pointsEarned = this.correct ? question.getPoints() : 0;
     }
 }
