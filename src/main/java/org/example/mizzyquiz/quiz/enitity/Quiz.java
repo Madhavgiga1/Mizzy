@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.mizzyquiz.auth.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -17,8 +18,8 @@ import java.util.*;
 public class Quiz extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -44,14 +45,21 @@ public class Quiz extends BaseEntity {
     @Builder.Default
     private Integer maxAttempts = 1;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "quiz_questions",
-            joinColumns = @JoinColumn(name = "quiz_id"),
-            inverseJoinColumns = @JoinColumn(name = "question_id")
-    )
-    @OrderColumn(name = "question_order")
+    // One Quiz has Many Questions (Owning side is Question)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Question> questions = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private Set<QuizAttempt> attempts = new HashSet<>();
@@ -76,19 +84,9 @@ public class Quiz extends BaseEntity {
     // Helper methods (defensive)
     public void addQuestion(Question question) {
         if (questions == null) questions = new ArrayList<>();
-        if (question.getQuizzes() == null) question.setQuizzes(new HashSet<>());
         questions.add(question);
-        question.getQuizzes().add(this);
     }
 
-    public void removeQuestion(Question question) {
-        if (questions != null) {
-            questions.remove(question);
-        }
-        if (question.getQuizzes() != null) {
-            question.getQuizzes().remove(this);
-        }
-    }
 
     public int getTotalPoints() {
         return (questions == null) ? 0 : questions.stream().mapToInt(Question::getPoints).sum();

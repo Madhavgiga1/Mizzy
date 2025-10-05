@@ -45,7 +45,7 @@ public class AdminQuizController {
 
     @PutMapping("/quizzes/{id}")
     public ResponseEntity<QuizDto> updateQuiz(
-            @PathVariable UUID id,
+            @PathVariable Long id,
             @Valid @RequestBody QuizUpdateDto dto) {
         QuizDto quiz = quizManagementService.updateQuiz(id, dto);
         return ResponseEntity.ok(quiz);
@@ -55,18 +55,18 @@ public class AdminQuizController {
     public ResponseEntity<Void> addQuestionsToQuiz(
             @PathVariable String id,
             @RequestBody List<Question> questions) {
-        quizManagementService.addQuestionsToQuiz((id), questions);
+        quizManagementService.addQuestionsToQuiz(Long.valueOf((id)), questions);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/quizzes/{id}/publish")
-    public ResponseEntity<QuizDto> publishQuiz(@PathVariable UUID id) {
+    public ResponseEntity<QuizDto> publishQuiz(@PathVariable Long id) {
         QuizDto quiz = quizManagementService.publishQuiz(id);
         return ResponseEntity.ok(quiz);
     }
 
     @DeleteMapping("/quizzes/{id}")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteQuiz(@PathVariable Long id) {
         quizManagementService.deleteQuiz(id);
         return ResponseEntity.noContent().build();
     }

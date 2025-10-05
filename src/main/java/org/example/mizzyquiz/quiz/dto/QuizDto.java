@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizDto {
-    private UUID id;
+    private Long id;
     private String title;
     private String description;
     private int questionCount;

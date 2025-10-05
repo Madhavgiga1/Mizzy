@@ -6,30 +6,33 @@ import lombok.*;
 import java.util.UUID;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
 @Entity
 @Table(name = "options")
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Option extends BaseEntity {
+public class Option {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false)
     private String text;
 
     @Column(name = "is_correct", nullable = false)
-    @Builder.Default
-    private boolean correct = false;
+    private boolean correct;
 
-
-
-    // Optional: feedback for this option
-    @Column(length = 500)
-    private String feedback;
+    // Many Options belong to One Question (weak entity relationship)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
 }
-

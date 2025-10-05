@@ -47,7 +47,6 @@ public class QuestionManagementService {
             Option option = Option.builder()
                     .text(optionDto.getText())
                     .correct(optionDto.isCorrect())
-                    .feedback(optionDto.getFeedback())
                     .build();
             question.addOption(option);
         }
@@ -69,12 +68,7 @@ public class QuestionManagementService {
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         // Check if question is part of published quiz
-        boolean isInPublishedQuiz = question.getQuizzes().stream()
-                .anyMatch(Quiz::isPublished);
 
-        if (isInPublishedQuiz) {
-            throw new BadRequestException("Cannot modify question used in published quiz");
-        }
 
         question.setText(dto.getText());
         question.setPoints(dto.getPoints());
@@ -87,7 +81,6 @@ public class QuestionManagementService {
             Option option = Option.builder()
                     .text(optionDto.getText())
                     .correct(optionDto.isCorrect())
-                    .feedback(optionDto.getFeedback())
                     .build();
             question.addOption(option);
         }
@@ -105,9 +98,7 @@ public class QuestionManagementService {
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         // Check if question is part of any quiz
-        if (!question.getQuizzes().isEmpty()) {
-            throw new BadRequestException("Cannot delete question that is part of quiz");
-        }
+
 
         questionRepository.delete(question);
         log.info("Question deleted: {}", questionId);

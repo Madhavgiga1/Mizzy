@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class QuizAttemptDto {
     private UUID id;
-    private UUID quizId;
+    private Long quizId;
     private String quizTitle;
     private LocalDateTime startedAt;
     private LocalDateTime completedAt;

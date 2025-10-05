@@ -8,6 +8,7 @@ import org.example.mizzyquiz.auth.entity.User;
 import org.example.mizzyquiz.exception.BadRequestException;
 import org.example.mizzyquiz.exception.ResourceNotFoundException;
 import org.example.mizzyquiz.quiz.dto.QuizDto;
+import org.example.mizzyquiz.quiz.enitity.Option;
 import org.example.mizzyquiz.quiz.enitity.Question;
 import org.example.mizzyquiz.quiz.enitity.Quiz;
 import org.example.mizzyquiz.quiz.repository.QuestionRepository;
@@ -47,7 +48,7 @@ public class QuizManagementService {
     }
 
     @Transactional
-    public QuizDto updateQuiz(UUID quizId, QuizUpdateDto dto) {
+    public QuizDto updateQuiz(Long quizId, QuizUpdateDto dto) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found"));
 
@@ -66,13 +67,17 @@ public class QuizManagementService {
     }
 
     @Transactional
-    public void addQuestionsToQuiz(String quizId, List<Question> questions) {
+    public void addQuestionsToQuiz(Long quizId, List<Question> questions) {
 
-        Quiz quiz=quizRepository.findById(UUID.fromString(quizId)).get();
+        Quiz quiz=quizRepository.findById(quizId).get();
 
 
         for (Question question : questions) {
-
+            question.setQuiz(quiz);
+            quiz.addQuestion(question);
+            for (Option option : question.getOptions()) {
+                option.setQuestion(question);
+            }
             quiz.addQuestion(question);
         }
 
@@ -81,7 +86,7 @@ public class QuizManagementService {
     }
 
     @Transactional
-    public QuizDto publishQuiz(UUID quizId) {
+    public QuizDto publishQuiz(Long quizId) {
         Quiz quiz = quizRepository.findByIdWithQuestions(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found"));
 
@@ -104,7 +109,7 @@ public class QuizManagementService {
     }
 
     @Transactional
-    public void deleteQuiz(UUID quizId) {
+    public void deleteQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found"));
 

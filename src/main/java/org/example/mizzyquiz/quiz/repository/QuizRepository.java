@@ -14,10 +14,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface QuizRepository extends JpaRepository<Quiz, UUID>, JpaSpecificationExecutor<Quiz> {
+public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificationExecutor<Quiz> {
 
     @Query("SELECT q FROM Quiz q LEFT JOIN FETCH q.questions WHERE q.id = :id")
-    Optional<Quiz> findByIdWithQuestions(@Param("id") UUID id);
+    Optional<Quiz> findByIdWithQuestions(@Param("id") Long id);
 
     Page<Quiz> findByPublishedTrue(Pageable pageable);
 
@@ -29,5 +29,5 @@ public interface QuizRepository extends JpaRepository<Quiz, UUID>, JpaSpecificat
     Page<Quiz> searchPublishedQuizzes(@Param("search") String search, Pageable pageable);
 
     @Query("SELECT COUNT(qa) FROM QuizAttempt qa WHERE qa.quiz.id = :quizId AND qa.user.id = :userId")
-    int countUserAttempts(@Param("quizId") UUID quizId, @Param("userId") UUID userId);
+    int countUserAttempts(@Param("quizId") Long quizId, @Param("userId") UUID userId);
 }

@@ -42,7 +42,7 @@ public class QuizTakingService {
     }
 
     @Transactional
-    public QuizAttemptDto startQuiz(UUID quizId, User user) {
+    public QuizAttemptDto startQuiz(Long quizId, User user) {
         Quiz quiz = quizRepository.findByIdWithQuestions(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found"));
 

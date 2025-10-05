@@ -28,19 +28,20 @@ public class Question extends BaseEntity {
     @Builder.Default
     private Integer points = 1;
 
-
-    // Many-to-Many back reference to Quiz
-    @ManyToMany(mappedBy = "questions")
-    private Set<Quiz> quizzes = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
 
     // One-to-Many with Options (Options belong to specific questions)
-    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Option> options = new ArrayList<>();
 
 
     // Helper methods
     public void addOption(Option option) {
         options.add(option);
+        option.setQuestion(this);
     }
 
 
