@@ -18,7 +18,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Madhav's Quiz Application API")
+                        .title("Madhav's Quiz Application API for VERTO Assignment")
                         .version("1.0.0")
                         .description("REST API for Online Quiz Application for  VERTO")
                         .contact(new Contact()

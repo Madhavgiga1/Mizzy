@@ -27,11 +27,7 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
 
-    /**
-     * Fetch questions for a specific quiz
-     * Regular users will NOT see correct answers
-     * Admins can see correct answers if includeCorrectAnswers=true
-     */
+
     @Transactional(readOnly = true)
     public QuizQuestionsResponse getQuizQuestions(Long quizId, boolean includeCorrectAnswers) {
         log.info("Fetching questions for quiz: {}, includeCorrectAnswers: {}", quizId, includeCorrectAnswers);

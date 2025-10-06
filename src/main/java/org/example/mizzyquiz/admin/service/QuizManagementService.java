@@ -87,23 +87,16 @@ public class QuizManagementService {
 
     @Transactional
     public QuizDto publishQuiz(Long quizId) {
-        Quiz quiz = quizRepository.findByIdWithQuestions(quizId)
-                .orElseThrow(() -> new ResourceNotFoundException("Quiz not found"));
 
-        // Validate before publishing
-        if (quiz.getQuestions().isEmpty()) {
-            throw new BadRequestException("Cannot publish quiz without questions");
-        }
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new BadRequestException("Quiz not found"));
 
         for (Question question : quiz.getQuestions()) {
-            if (!question.isValidConfiguration()) {
-                throw new BadRequestException("Question configuration is invalid");
-            }
+            question.validateQuestion();
         }
 
         quiz.setPublished(true);
         quiz = quizRepository.save(quiz);
-        log.info("Quiz published: {}", quizId);
+        log.info("Done: {}", quizId);
 
         return mapToDto(quiz);
     }

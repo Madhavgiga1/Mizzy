@@ -48,10 +48,5 @@ public class Answer extends BaseEntity {
     @Column(name = "points_earned")
     private Integer pointsEarned;
 
-    // Helper method to check correctness
-    public void evaluateAnswer() {
-        this.correct = selectedOption != null && selectedOption.isCorrect();
 
-        this.pointsEarned = this.correct ? question.getPoints() : 0;
-    }
 }

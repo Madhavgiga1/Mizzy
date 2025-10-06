@@ -5,11 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.mizzyquiz.quiz.enitity.DifficultyLevel;
-import org.example.mizzyquiz.quiz.enitity.QuestionType;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder

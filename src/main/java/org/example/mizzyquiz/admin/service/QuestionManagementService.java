@@ -52,9 +52,7 @@ public class QuestionManagementService {
         }
 
         // Validate question configuration
-        if (!question.isValidConfiguration()) {
-            throw new BadRequestException("Invalid question configuration for type: " );
-        }
+        question.validateQuestion();
 
         question = questionRepository.save(question);
         log.info("Question created: {}", question.getId());
@@ -85,9 +83,7 @@ public class QuestionManagementService {
             question.addOption(option);
         }
 
-        if (!question.isValidConfiguration()) {
-            throw new BadRequestException("Invalid question configuration");
-        }
+        question.validateQuestion();
 
         return questionRepository.save(question);
     }

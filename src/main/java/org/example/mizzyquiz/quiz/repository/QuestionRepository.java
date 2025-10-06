@@ -1,8 +1,6 @@
 package org.example.mizzyquiz.quiz.repository;
 
-import org.example.mizzyquiz.quiz.enitity.DifficultyLevel;
 import org.example.mizzyquiz.quiz.enitity.Question;
-import org.example.mizzyquiz.quiz.enitity.QuestionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +14,7 @@ import java.util.UUID;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
-    // For question bank management
+    // to search for a question based on wildcard matching
     @Query("SELECT q FROM Question q WHERE " +
             "LOWER(q.text) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Question> searchQuestions(@Param("search") String search, Pageable pageable);

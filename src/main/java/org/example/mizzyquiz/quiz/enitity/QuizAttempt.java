@@ -62,7 +62,6 @@ public class QuizAttempt extends BaseEntity {
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Answer> answers = new HashSet<>();
 
-    // Unique constraint to prevent multiple active attempts
 
 
     // Helper methods
@@ -77,7 +76,6 @@ public class QuizAttempt extends BaseEntity {
     }
 
     public void complete() {
-        this.status = AttemptStatus.COMPLETED;
-        this.completedAt = LocalDateTime.now();
+         this.completedAt = LocalDateTime.now();
     }
 }

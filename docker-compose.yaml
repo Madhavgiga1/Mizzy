@@ -1,46 +1,45 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: quiz-postgres
     environment:
       POSTGRES_DB: quizdb
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: madhav
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - quiz-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  # Quiz Application
-  quiz-app:
-    build: .
-    container_name: quiz-app
-    depends_on:
-      postgres:
-        condition: service_healthy
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quiz-api
+
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/quizdb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_DB: quizdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: madhav
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      JWT_EXPIRATION: 86400000
+      DDL_AUTO: update
+      SHOW_SQL: false
+      SERVER_PORT: 8080
     ports:
       - "8080:8080"
     networks:
       - quiz-network
 
-networks:
-  quiz-network:
-    driver: bridge
 
 volumes:
   postgres_data:
+
+networks:
+  quiz-network:

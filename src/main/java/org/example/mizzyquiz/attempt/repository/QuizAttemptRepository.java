@@ -1,45 +1,18 @@
-package org.example.mizzyquiz.attempt.repository;
+package org.example.mizzyquiz.quiz.repository;
 
-
-import org.example.mizzyquiz.auth.entity.User;
-import org.example.mizzyquiz.quiz.enitity.AttemptStatus;
-import org.example.mizzyquiz.quiz.enitity.Quiz;
 import org.example.mizzyquiz.quiz.enitity.QuizAttempt;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, UUID> {
 
-    Optional<QuizAttempt> findByIdAndUser(UUID id, User user);
+    List<QuizAttempt> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
-    Optional<QuizAttempt> findByQuizAndUserAndStatus(Quiz quiz, User user, AttemptStatus status);
+    List<QuizAttempt> findByQuizIdOrderByCreatedAtDesc(Long quizId);
 
-    List<QuizAttempt> findByUserOrderByStartedAtDesc(User user);
-
-    Page<QuizAttempt> findByUser(User user, Pageable pageable);
-
-    Page<QuizAttempt> findByQuiz(Quiz quiz, Pageable pageable);
-
-    @Query("SELECT qa FROM QuizAttempt qa WHERE qa.status = :status AND " +
-            "qa.startedAt < :expiredTime")
-    List<QuizAttempt> findExpiredAttempts(
-            @Param("status") AttemptStatus status,
-            @Param("expiredTime") LocalDateTime expiredTime
-    );
-
-    @Query("SELECT AVG(qa.percentage) FROM QuizAttempt qa WHERE qa.quiz = :quiz AND qa.status = 'COMPLETED'")
-    Double getAverageScore(@Param("quiz") Quiz quiz);
-
-    @Query("SELECT COUNT(qa) FROM QuizAttempt qa WHERE qa.quiz = :quiz AND qa.passed = true")
-    Long countPassedAttempts(@Param("quiz") Quiz quiz);
+    long countByUserIdAndQuizId(Long userId, Long quizId);
 }

@@ -16,10 +16,7 @@ import java.util.UUID;
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificationExecutor<Quiz> {
 
-    @Query("SELECT q FROM Quiz q LEFT JOIN FETCH q.questions WHERE q.id = :id")
-    Optional<Quiz> findByIdWithQuestions(@Param("id") Long id);
 
-    Page<Quiz> findByPublishedTrue(Pageable pageable);
 
     Page<Quiz> findByCreatedBy(User createdBy, Pageable pageable);
 

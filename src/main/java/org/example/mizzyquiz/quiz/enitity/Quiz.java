@@ -72,7 +72,7 @@ public class Quiz extends BaseEntity {
         this.maxAttempts = 1;
     }
 
-    // lifecycle callbacks that JPA will call
+    // lifecycle callbacks that JPA will call, questions field were throwing NPE before this
     @PostLoad
     @PostPersist
     @PostUpdate
@@ -81,7 +81,7 @@ public class Quiz extends BaseEntity {
         if (attempts == null) attempts = new HashSet<>();
     }
 
-    // Helper methods (defensive)
+
     public void addQuestion(Question question) {
         if (questions == null) questions = new ArrayList<>();
         questions.add(question);

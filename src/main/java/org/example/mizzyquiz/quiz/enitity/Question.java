@@ -5,6 +5,9 @@ import lombok.*;
 
 import java.util.*;
 
+import static org.example.mizzyquiz.quiz.enitity.QuestionType.MULTIPLE_CHOICE;
+import static org.example.mizzyquiz.quiz.enitity.QuestionType.SINGLE_CHOICE;
+
 @Entity
 @Table(name = "questions")
 @Getter
@@ -32,7 +35,7 @@ public class Question extends BaseEntity {
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
-    // One-to-Many with Options (Options belong to specific questions)
+    // One-to-Many with Options
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Option> options = new ArrayList<>();
@@ -45,17 +48,54 @@ public class Question extends BaseEntity {
     }
 
 
-    public List<Option> getCorrectOptions() {
+    /*public List<Option> getCorrectOptions() {
         return options.stream()
                 .filter(Option::isCorrect)
                 .toList();
-    }
+    }*/
 
-    public boolean isValidConfiguration() {
-        if (options.isEmpty()) return false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private QuestionType type = QuestionType.SINGLE_CHOICE;
+
+
+    @PrePersist
+    @PreUpdate
+    public void validateQuestion() {
+
 
         long correctCount = options.stream().filter(Option::isCorrect).count();
-        return correctCount==1;
 
+        // Valideting based on question type
+        switch (type) {
+            case SINGLE_CHOICE:
+                if (correctCount != 1) {
+                    throw new IllegalStateException(
+                            "Single choice question must have exactly 1 correct answer, found: " + correctCount
+                    );
+                }
+                if (options.size() < 2) {
+                    throw new IllegalStateException("Single choice question must have at least 2 options");
+                }
+                break;
+
+            case MULTIPLE_CHOICE:
+                if (correctCount < 1) {
+                    throw new IllegalStateException("Multiple choice question must have at least 1 correct answer");
+                }
+                if (options.size() < 2) {
+                    throw new IllegalStateException("Multiple choice question must have at least 2 options");
+                }
+                break;
+
+            case TEXT:
+                if (text.length() > 300) {
+                    throw new IllegalStateException("Text question cannot exceed 300 characters");
+                }
+
+                break;
+        }
     }
 }
