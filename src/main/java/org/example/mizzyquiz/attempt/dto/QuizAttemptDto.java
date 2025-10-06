@@ -14,14 +14,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizAttemptDto {
-    private UUID id;
-    private Long quizId;
+    private UUID attemptId;
     private String quizTitle;
-    private LocalDateTime startedAt;
-    private LocalDateTime completedAt;
-    private AttemptStatus status;
     private Integer score;
-    private Integer totalScore;
+    private Integer total;
     private Double percentage;
     private Boolean passed;
+    private LocalDateTime completedAt;
 }

@@ -1,8 +1,6 @@
 package org.example.mizzyquiz.quiz.repository;
 
-import org.example.mizzyquiz.quiz.enitity.DifficultyLevel;
 import org.example.mizzyquiz.quiz.enitity.Question;
-import org.example.mizzyquiz.quiz.enitity.QuestionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

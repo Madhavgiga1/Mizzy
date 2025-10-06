@@ -19,7 +19,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificat
     @Query("SELECT q FROM Quiz q LEFT JOIN FETCH q.questions WHERE q.id = :id")
     Optional<Quiz> findByIdWithQuestions(@Param("id") Long id);
 
-    Page<Quiz> findByPublishedTrue(Pageable pageable);
 
     Page<Quiz> findByCreatedBy(User createdBy, Pageable pageable);
 
@@ -28,6 +27,4 @@ public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificat
             "LOWER(q.description) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Quiz> searchPublishedQuizzes(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT COUNT(qa) FROM QuizAttempt qa WHERE qa.quiz.id = :quizId AND qa.user.id = :userId")
-    int countUserAttempts(@Param("quizId") Long quizId, @Param("userId") UUID userId);
 }

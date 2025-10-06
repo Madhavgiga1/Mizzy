@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/quizzes").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/attempt/**").hasRole("USER")
                         .requestMatchers(
                                         "/api-docs/**",          // your configured path
                                         "/v3/api-docs/**",

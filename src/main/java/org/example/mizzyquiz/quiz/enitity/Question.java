@@ -51,24 +51,19 @@ public class Question extends BaseEntity {
                 .toList();
     }
 
-    public boolean isValidConfiguration() {
-        if (options.isEmpty()) return false;
 
-        long correctCount = options.stream().filter(Option::isCorrect).count();
-        return correctCount==1;
-
-    }
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private QuestionType type = QuestionType.SINGLE_CHOICE;
 
-    @PrePersist
-    @PreUpdate
+   @PostLoad
     public void validateQuestion() {
 
 
-        long correctCount = options.stream().filter(Option::isCorrect).count();
+        long correctCount = options.stream().filter(
+                option -> option.isCorrect()
+        ).count();
 
         // Valideting based on question type
         switch (type) {

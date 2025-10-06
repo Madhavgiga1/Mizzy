@@ -73,8 +73,9 @@ public class QuizManagementService {
 
 
         for (Question question : questions) {
+            question.validateQuestion();
             question.setQuiz(quiz);
-            quiz.addQuestion(question);
+
             for (Option option : question.getOptions()) {
                 option.setQuestion(question);
             }
@@ -96,9 +97,7 @@ public class QuizManagementService {
         }
 
         for (Question question : quiz.getQuestions()) {
-            if (!question.isValidConfiguration()) {
-                throw new BadRequestException("Question configuration is invalid");
-            }
+            question.validateQuestion();
         }
 
         quiz.setPublished(true);

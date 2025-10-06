@@ -34,7 +34,7 @@ public class AuthService {
 
     @Transactional
     public UserDto registerUser(RegisterRequest request) throws BadRequestException {
-        // Validate
+        // to Validate
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException("Username is already taken!");
         }
