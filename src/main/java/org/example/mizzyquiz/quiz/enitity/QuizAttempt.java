@@ -5,18 +5,11 @@ import lombok.*;
 import org.example.mizzyquiz.auth.entity.User;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
 import java.util.UUID;
 
 @Entity
-
-@Table(name = "quiz_attempts",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"user_id", "quiz_id", "status"},
-                name = "uk_user_quiz_active"
-        )
-)
+@Table(name = "quiz_attempts")
 @Getter
 @Setter
 @Builder
@@ -42,15 +35,10 @@ public class QuizAttempt extends BaseEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private AttemptStatus status = AttemptStatus.IN_PROGRESS;
-
-    @Column(name = "score")
+    @Column(name = "score", nullable = false)
     private Integer score;
 
-    @Column(name = "total_score")
+    @Column(name = "total_score", nullable = false)
     private Integer totalScore;
 
     @Column(name = "percentage")
@@ -59,25 +47,7 @@ public class QuizAttempt extends BaseEntity {
     @Column(name = "is_passed")
     private Boolean passed;
 
-    @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Answer> answers = new HashSet<>();
-
-    // Unique constraint to prevent multiple active attempts
-
-
-    // Helper methods
-    public void addAnswer(Answer answer) {
-        answers.add(answer);
-        answer.setAttempt(this);
-    }
-
-    public boolean isExpired() {
-        if (quiz.getTimeLimitMinutes() == null) return false;
-        return startedAt.plusMinutes(quiz.getTimeLimitMinutes()).isBefore(LocalDateTime.now());
-    }
-
     public void complete() {
-        this.status = AttemptStatus.COMPLETED;
         this.completedAt = LocalDateTime.now();
     }
 }

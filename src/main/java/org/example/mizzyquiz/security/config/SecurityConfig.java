@@ -40,15 +40,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/quizzes").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/attempt/**").hasRole("USER")
+                        .requestMatchers("/api/v1/attempt/**").permitAll()
                         .requestMatchers(
-                                        "/api-docs/**",          // your configured path
+                                        "/api-docs/**",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
                                         "/swagger-ui/index.html",
-                                        "/swagger-resources/**",
-                                        "/webjars/**"
+                                        "/swagger-resources/**"
                                 ).permitAll()
                         .anyRequest().authenticated()
                 );

@@ -22,9 +22,5 @@ public interface QuizRepository extends JpaRepository<Quiz, Long>, JpaSpecificat
 
     Page<Quiz> findByCreatedBy(User createdBy, Pageable pageable);
 
-    @Query("SELECT q FROM Quiz q WHERE q.published = true AND " +
-            "(LOWER(q.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(q.description) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<Quiz> searchPublishedQuizzes(@Param("search") String search, Pageable pageable);
 
 }

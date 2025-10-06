@@ -19,36 +19,29 @@ import java.time.LocalDateTime;
 @Slf4j
 public class QuizScoringService {
 
-
     private final QuizRepository quizRepository;
     private final QuizAttemptRepository attemptRepository;
     private final UserRepository userRepository;
 
     @Transactional
     public QuizScoreResponse submitQuizAnswers(Long quizId, QuizSubmissionRequest request) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow();
         User currentUser = getCurrentUser();
-
-        // Create attempt record
-        QuizAttempt attempt = QuizAttempt.builder()
-                .user(currentUser)
-                .quiz(quiz)
-                .startedAt(LocalDateTime.now())
-                .status(AttemptStatus.IN_PROGRESS)
-                .build();
 
         int score = 0;
         int total = 0;
 
+        // Calculate score
         for (Question question : quiz.getQuestions()) {
-            // Skip text questions
             if (question.getType() == QuestionType.TEXT) {
                 continue;
             }
 
             total += question.getPoints();
 
+            // Find user's answer for this question
             AnswerRequest userAnswer = request.getAnswers().stream()
                     .filter(a -> a.getQuestionId().equals(question.getId()))
                     .findFirst()
@@ -60,44 +53,31 @@ public class QuizScoringService {
                         .findFirst()
                         .orElse(null);
 
-                if (selectedOption != null) {
-                    boolean isCorrect = selectedOption.isCorrect();
-                    int pointsEarned = isCorrect ? question.getPoints() : 0;
-
-                    if (isCorrect) {
-                        score += pointsEarned;
-                    }
-
-                    // Save individual answer
-                    Answer answer = Answer.builder()
-                            .attempt(attempt)
-                            .question(question)
-                            .selectedOption(selectedOption)
-                            .correct(isCorrect)
-                            .pointsEarned(pointsEarned)
-                            .build();
-
-                    attempt.addAnswer(answer);
+                if (selectedOption != null && selectedOption.isCorrect()) {
+                    score += question.getPoints();
                 }
             }
         }
 
-        // Calculate results
+
         double percentage = total > 0 ? (score * 100.0) / total : 0.0;
         boolean passed = quiz.getPassingScore() != null && percentage >= quiz.getPassingScore();
 
-        // Complete the attempt
-        attempt.setScore(score);
-        attempt.setTotalScore(total);
-        attempt.setPercentage(percentage);
-        attempt.setPassed(passed);
-        attempt.setStatus(AttemptStatus.COMPLETED);
-        attempt.complete();
 
-        // Save to database
+        QuizAttempt attempt = QuizAttempt.builder()
+                .user(currentUser)
+                .quiz(quiz)
+                .startedAt(LocalDateTime.now())
+                .score(score)
+                .totalScore(total)
+                .percentage(percentage)
+                .passed(passed)
+                .build();
+
+        attempt.complete();
         attemptRepository.save(attempt);
 
-        log.info("Quiz attempt saved - User: {}, Quiz: {}, Score: {}/{}",
+        log.info("Quiz submitted - User: {}, Quiz: {}, Score: {}/{}",
                 currentUser.getUsername(), quiz.getTitle(), score, total);
 
         return QuizScoreResponse.builder()
@@ -111,41 +91,4 @@ public class QuizScoringService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
-    /*   private final QuizRepository quizRepository;
-
-    @Transactional
-    public QuizScoreResponse submitQuizAnswers(Long quizId, QuizSubmissionRequest request) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow();
-
-        int score = 0;
-        int total = 0;
-
-        for (Question question : quiz.getQuestions()) {
-            // Skip text questions
-            if (question.getType() == QuestionType.TEXT) {
-                continue;
-            }
-
-            total += question.getPoints();
-
-            AnswerRequest userAnswer = request.getAnswers().stream()
-                    .filter(a -> a.getQuestionId().equals(question.getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (userAnswer != null) {
-                boolean isCorrect = question.getOptions().stream()
-                        .anyMatch(opt -> opt.getId().equals(userAnswer.getSelectedOptionId()) && opt.isCorrect());
-
-                if (isCorrect) {
-                    score += question.getPoints();
-                }
-            }
-        }
-
-        return QuizScoreResponse.builder()
-                .score(score)
-                .total(total)
-                .build();
-    }*/
 }
