@@ -64,6 +64,8 @@ public class Quiz extends BaseEntity {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private Set<QuizAttempt> attempts = new HashSet<>();
 
+
+
     // explicit no-arg constructor to ensure collections are initialized
     public Quiz() {
         this.questions = new ArrayList<>();

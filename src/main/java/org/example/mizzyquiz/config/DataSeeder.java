@@ -22,7 +22,7 @@ public class DataSeeder {
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository) {
         return args -> {
-            // Create default admin if not exists
+
             if (!userRepository.existsByUsername("admin")) {
                 User admin = User.builder()
                         .username("admin")
@@ -37,7 +37,7 @@ public class DataSeeder {
                 log.info("Default admin user created");
             }
 
-            // Create test user if not exists
+            // for Create test user if not exists
             if (!userRepository.existsByUsername("testuser")) {
                 User user = User.builder()
                         .username("testuser")
